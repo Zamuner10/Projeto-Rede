@@ -1,9 +1,13 @@
 package com.example.vinicius.service;
 
 import com.example.vinicius.dto.UserRequestDTO;
+import com.example.vinicius.entity.Profile;
+import com.example.vinicius.repository.ProfileRepository;
 import com.example.vinicius.repository.UserRepository;
 import com.example.vinicius.entity.User;
 
+
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +19,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final ProfileRepository profileRepository;
 
-    public UserService (UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService){
+
+    public UserService (UserRepository userRepository, ProfileRepository profileRepository, PasswordEncoder passwordEncoder, EmailService emailService){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.profileRepository = profileRepository;
     }
 
+    @Transactional
     public User registerUser(UserRequestDTO dto){
 
         validateName(dto.name());
@@ -35,6 +43,11 @@ public class UserService {
     user.setAge(dto.age());
 
     User savedUser = userRepository.save(user);
+
+    Profile  profile = new Profile();
+    profile.setUser(savedUser);
+    profile.setNickname(savedUser.getName());
+    profileRepository.save(profile);
 
     return savedUser;
     }

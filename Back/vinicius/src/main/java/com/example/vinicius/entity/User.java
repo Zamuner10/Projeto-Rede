@@ -34,8 +34,7 @@ public class User implements UserDetails {
     private String email;
 
     @NotNull
-    @Min(15)
-    @Column(nullable = false)
+    @Max(15)
     private Integer age;
 
     public User (Long id, String name, String password, String email, Integer age){

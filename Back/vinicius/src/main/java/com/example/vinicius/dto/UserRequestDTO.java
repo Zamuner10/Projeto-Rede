@@ -18,7 +18,7 @@ public record UserRequestDTO (
         @NotBlank(message = "Confirmar senha obrigatório")
         String confirmPassword,
 
-        @NotBlank(message= "Idade é obrigatória")
+
         @Min(value = 15, message = "Usuário deve ter pelo menos 15 anos")
         Integer age
 ){ }
