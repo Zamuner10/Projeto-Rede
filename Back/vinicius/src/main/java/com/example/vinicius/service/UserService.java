@@ -32,9 +32,13 @@ public class UserService {
     @Transactional
     public User registerUser(UserRequestDTO dto){
 
-        validateName(dto.name());
-        validatePassword(dto.password());
-        validateEmailAlreadyExist(dto.email());
+    validateName(dto.name());
+    validatePassword(dto.password());
+    validateEmailAlreadyExist(dto.email());
+
+    if (!dto.password().equals(dto.confirmPassword())){
+        throw new IllegalArgumentException("As senhas não coincidem");
+    }
 
     User user = new User();
     user.setName(dto.name());
@@ -46,7 +50,6 @@ public class UserService {
 
     Profile  profile = new Profile();
     profile.setUser(savedUser);
-    profile.setNickname(savedUser.getName());
     profileRepository.save(profile);
 
     return savedUser;
