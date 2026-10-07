@@ -47,6 +47,7 @@ public class ProfileService {
             throw new IllegalArgumentException("Nickname não pode passar de 15 caracteres");
         }
     }
+
     private void validateBio(String bio){
         if (bio != null && bio.length()> 50){
             throw new IllegalArgumentException("A biografia não pode passar de 50 caracteres");

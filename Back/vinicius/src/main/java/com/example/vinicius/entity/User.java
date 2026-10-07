@@ -37,13 +37,19 @@ public class User implements UserDetails {
     @Min(15)
     private Integer age;
 
-    public User (Long id, String name, String password, String email, Integer age){
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Profile profile;
+
+    public User (Long id, String name, String password, String email, Integer age, Profile profile) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.email = email;
         this.age = age;
+        this.profile = profile;
     }
+
+
     public User(){}
 
     public void setId(Long id){this.id = id; }
@@ -60,6 +66,9 @@ public class User implements UserDetails {
 
     public void setAge (Integer age) {this.age = age;}
     public Integer getAge() { return age;}
+
+    public void setProfile(Profile profile){this.profile = profile;}
+    public Profile getProfile(){return profile;}
 
     @Override
     public Collection< ? extends GrantedAuthority> getAuthorities(){return List.of();}
