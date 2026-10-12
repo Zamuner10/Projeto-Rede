@@ -51,15 +51,20 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private String recoverToken(HttpServletRequest request){
-        if (request.getCookies() == null){
+        String authHeader = request.getHeader("Authorization");
+        if(authHeader != null && authHeader.startsWith("Bearer ")){
+            return authHeader.replace("Bearer ", "");
+        }
+        if(request.getCookies() == null){
             return null;
         }
-        for (Cookie cookie: request.getCookies()){
+        for(Cookie cookie : request.getCookies()){
             if("jwtToken".equals(cookie.getName())){
                 return cookie.getValue();
             }
         }
         return null;
     }
+
 }
 

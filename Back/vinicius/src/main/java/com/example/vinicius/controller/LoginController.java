@@ -41,7 +41,7 @@ public class LoginController {
                 .sameSite("Lax")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        return ResponseEntity.ok(new LoginResponseDTO("Login successful"));
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @PostMapping("/logout")
