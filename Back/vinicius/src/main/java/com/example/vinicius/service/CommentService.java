@@ -17,6 +17,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+
     public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
@@ -39,7 +40,9 @@ public class CommentService {
                 savedComment.getContent(),
                 savedComment.getCreatedAt(),
                 savedComment.getUser().getId(),
-                savedComment.getUser().getUsername()
+                savedComment.getUser().getProfile() != null
+                        ? savedComment.getUser().getProfile().getNickname()
+                        : savedComment.getUser().getName()
         );
     }
 
@@ -52,7 +55,9 @@ public class CommentService {
                         comment.getContent(),
                         comment.getCreatedAt(),
                         comment.getUser().getId(),
-                        comment.getUser().getUsername()
+                        comment.getUser().getProfile() != null
+                                ? comment.getUser().getProfile().getNickname()
+                                : comment.getUser().getName()
                 ))
                 .toList();
     }

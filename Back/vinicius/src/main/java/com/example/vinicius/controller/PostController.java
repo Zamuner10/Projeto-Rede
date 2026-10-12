@@ -33,6 +33,12 @@ public class PostController {
         return ResponseEntity.ok(feed);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Long id){
+        PostResponseDTO post = postService.getPostById(id);
+        return ResponseEntity.ok(post);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal User user) {
         postService.deletePost(id, user);

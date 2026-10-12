@@ -7,6 +7,7 @@ public record CommentResponseDTO(
         String content,
         LocalDateTime createdAt,
         Long User,
-        String username
+        String Nickname
+
 ) {
 }

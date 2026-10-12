@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 
 @Entity
-@Table(name="/profiles")
+@Table(name="profiles")
 public class Profile {
 
     @Id

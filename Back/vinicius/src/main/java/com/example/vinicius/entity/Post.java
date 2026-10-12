@@ -3,9 +3,11 @@ package com.example.vinicius.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "/posts")
+@Table(name = "posts")
 public class Post {
 
     @Id
@@ -18,9 +20,16 @@ public class Post {
     private String caption;
 
     @ManyToOne
+    @JoinColumn(name="user_id", nullable = false)
     private User user;
 
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy= "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     public Post(Long id, String mediaUrl, String mediaType, String caption, User user, LocalDateTime createdAt) {
         this.id = id;
@@ -50,4 +59,10 @@ public class Post {
 
     public void setCreatedAt(LocalDateTime createdAt) {this.createdAt = createdAt;}
     public LocalDateTime getCreatedAt() {return createdAt;}
+
+    public void setLike(List<PostLike> like) {this.likes = likes;}
+    public List<PostLike>getLike() {return likes;}
+
+    public void setComment(List<Comment> comment){this.comments = comments;}
+    public List<Comment> getComment() {return comments;}
 }
