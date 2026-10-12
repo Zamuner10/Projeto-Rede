@@ -51,7 +51,7 @@ public class LoginController {
                 .secure(isSecureCookie)
                 .path("/")
                 .maxAge(0)
-                .sameSite("None")
+                .sameSite("Lax")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookei.toString());
         return ResponseEntity.ok().build();
