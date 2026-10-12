@@ -20,11 +20,9 @@ public class User implements UserDetails {
 
     @NotBlank
     @Column(nullable = false)
-    @Size(min = 8)
     private String name;
 
     @NotBlank
-    @Size(min = 8)
     @Column(nullable = false)
     private String password;
 
@@ -34,7 +32,7 @@ public class User implements UserDetails {
     private String email;
 
     @NotNull
-    @Min(15)
+    @Min(13)
     private Integer age;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)

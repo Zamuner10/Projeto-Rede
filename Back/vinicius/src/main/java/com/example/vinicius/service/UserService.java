@@ -35,6 +35,7 @@ public class UserService {
     validateName(dto.name());
     validatePassword(dto.password());
     validateEmailAlreadyExist(dto.email());
+    validateNicknameAlreadyExist(dto.nickname());
 
     if (!dto.password().equals(dto.confirmPassword())){
         throw new IllegalArgumentException("As senhas não coincidem");
@@ -49,78 +50,87 @@ public class UserService {
     User savedUser = userRepository.save(user);
 
     Profile  profile = new Profile();
+    profile.setNickname(dto.nickname());
     profile.setUser(savedUser);
+
     profileRepository.save(profile);
 
     return savedUser;
     }
 
-    private void validateEmailAlreadyExist(String email){
+    private void validateEmailAlreadyExist(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()){
-            throw new IllegalArgumentException("Endereço de e-mail já cadastrado !");
+        if (user.isPresent()) {
+            throw new IllegalArgumentException("Endereço de e-mail já cadastrado!");
         }
     }
 
-    private void validateName(String name){
-        if(name == null || name.isBlank()){
+    private void validateNicknameAlreadyExist(String nickname) {
+        if (nickname == null || nickname.isBlank()) {
+            throw new IllegalArgumentException("Nickname não pode ficar vazio.");
+        }
+        if (profileRepository.findByNickname(nickname).isPresent()) {
+            throw new IllegalArgumentException("Nickname já está em uso por outro usuário!");
+        }
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Nome não pode ficar vazio.");
         }
         char firstLetter = name.charAt(0);
-        if(!Character.isUpperCase(firstLetter)){
+        if (!Character.isUpperCase(firstLetter)) {
             throw new IllegalArgumentException("A primeira letra deve ser Maiúscula");
         }
-        for(int i = 0 ; i < name.length(); i++){
+        for (int i = 0; i < name.length(); i++) {
             char ch = name.charAt(i);
-            if(Character.isDigit(ch)){
+            if (Character.isDigit(ch)) {
                 throw new IllegalArgumentException("Não pode conter números no nome.");
             }
-            if(!Character.isLetter(ch)  && !Character.isWhitespace(ch)){
+            if (!Character.isLetter(ch) && !Character.isWhitespace(ch)) {
                 throw new IllegalArgumentException("Não pode conter caracteres especiais.");
             }
         }
     }
 
-    private void validatePassword(String password){
-        if(password == null || password.isBlank()){
-            throw new IllegalArgumentException("Senha não pode estar vazia !");
+    private void validatePassword(String password) {
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Senha não pode estar vazia!");
         }
         boolean hasLetter = false;
         boolean hasUppercase = false;
         boolean hasDigit = false;
         boolean hasSpecialChar = false;
 
-        for (int i = 0; i <password.length(); i++){
+        for (int i = 0; i < password.length(); i++) {
             char ch = password.charAt(i);
 
-            if(Character.isLetter(ch)){
+            if (Character.isLetter(ch)) {
                 hasLetter = true;
             }
-            if (Character.isUpperCase(ch)){
+            if (Character.isUpperCase(ch)) {
                 hasUppercase = true;
             }
-            if(Character.isDigit(ch)){
+            if (Character.isDigit(ch)) {
                 hasDigit = true;
             }
-            if (!Character.isLetterOrDigit(ch) && !Character.isWhitespace(ch)){
+            if (!Character.isLetterOrDigit(ch) && !Character.isWhitespace(ch)) {
                 hasSpecialChar = true;
             }
         }
 
-        if (!hasLetter){
+        if (!hasLetter) {
             throw new IllegalArgumentException("Senha deve conter pelo menos uma Letra");
         }
-
-        if(!hasUppercase){
-            throw  new IllegalArgumentException("Senha deve conter pelo menos uma Letra Maiúscula");
+        if (!hasUppercase) {
+            throw new IllegalArgumentException("Senha deve conter pelo menos uma Letra Maiúscula");
         }
-        if(!hasDigit){
+        if (!hasDigit) {
             throw new IllegalArgumentException("Senha deve conter pelo menos um número");
         }
-        if(!hasSpecialChar){
-            throw new IllegalArgumentException("Senha deve conter pelo menos um caractere especial ");
+        if (!hasSpecialChar) {
+            throw new IllegalArgumentException("Senha deve conter pelo menos um caractere especial");
         }
     }
 }
-
 

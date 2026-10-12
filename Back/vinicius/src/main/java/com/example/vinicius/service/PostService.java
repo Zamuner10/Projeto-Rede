@@ -29,7 +29,7 @@ public class PostService {
 
     public PostResponseDTO getPostById(Long id){
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException("\"Post não encontrado com o ID: \" + id"));
+                .orElseThrow(() -> new PostNotFoundException("Post não encontrado com o ID: "+ id));
         return new PostResponseDTO(
                 post.getId(),
                 post.getCaption(),

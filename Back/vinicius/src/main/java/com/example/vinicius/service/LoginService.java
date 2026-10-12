@@ -19,9 +19,8 @@ public class LoginService {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
     }
-
-    public String login(LoginRequestDTO request){
-        var authToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+    public String login(LoginRequestDTO request) {
+        var authToken = new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword());
         Authentication authentication = authenticationManager.authenticate(authToken);
 
         User user = (User) authentication.getPrincipal();
