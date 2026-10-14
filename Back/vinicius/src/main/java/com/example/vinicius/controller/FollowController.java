@@ -1,10 +1,13 @@
 package com.example.vinicius.controller;
 
+import com.example.vinicius.dto.UserSummaryDTO;
 import com.example.vinicius.entity.User;
 import com.example.vinicius.service.FollowService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -34,10 +37,19 @@ public class FollowController {
         return ResponseEntity.ok(count);
     }
 
-
     @GetMapping("/{id}/following/count")
     public ResponseEntity<Long> getFollowingCount(@PathVariable Long id){
         long count = followService.getFollowingCount(id);
         return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/{id}/followers")
+    public ResponseEntity<List<UserSummaryDTO>> getFollowers(@PathVariable Long id){
+        return ResponseEntity.ok(followService.getFollowers(id));
+    }
+
+    @GetMapping("/{id}/following")
+    public ResponseEntity<List<UserSummaryDTO>> getFollowing(@PathVariable Long id){
+        return ResponseEntity.ok(followService.getFollowing(id));
     }
 }

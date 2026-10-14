@@ -15,8 +15,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByUserInOrderByCreatedAtDesc(List<User> users);
 
     @Query("SELECT p FROM Post p " +
-            "LEFT JOIN p.likes l " +
-            "LEFT JOIN p.comments c " +
+            "LEFT JOIN p.like l " +
+            "LEFT JOIN p.comment c " +
             "GROUP BY p " +
             "ORDER BY (COUNT(DISTINCT l) + COUNT(DISTINCT c)) DESC, p.createdAt DESC")
     List<Post> findTrendingPosts();

@@ -26,10 +26,10 @@ public class Post {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy= "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostLike> likes = new ArrayList<>();
+    private List<PostLike> like = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    private List<Comment> comment = new ArrayList<>();
 
     public Post(Long id, String mediaUrl, String mediaType, String caption, User user, LocalDateTime createdAt) {
         this.id = id;
@@ -60,9 +60,9 @@ public class Post {
     public void setCreatedAt(LocalDateTime createdAt) {this.createdAt = createdAt;}
     public LocalDateTime getCreatedAt() {return createdAt;}
 
-    public void setLike(List<PostLike> like) {this.likes = likes;}
-    public List<PostLike>getLike() {return likes;}
+    public void setLike(List<PostLike> like) {this.like = like;}
+    public List<PostLike>getLike() {return like;}
 
-    public void setComment(List<Comment> comment){this.comments = comments;}
-    public List<Comment> getComment() {return comments;}
+    public void setComment(List<Comment> comment){this.comment = comment;}
+    public List<Comment> getComment() {return comment;}
 }
