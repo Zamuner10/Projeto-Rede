@@ -2,12 +2,14 @@ package com.example.vinicius.service;
 
 import com.example.vinicius.dto.PostRequestDTO;
 import com.example.vinicius.dto.PostResponseDTO;
+import com.example.vinicius.entity.Follow;
 import com.example.vinicius.entity.Post;
 import com.example.vinicius.entity.PostLike;
 import com.example.vinicius.entity.User;
 import com.example.vinicius.exception.AlreadyLikeException;
 import com.example.vinicius.exception.PostNotFoundException;
 import com.example.vinicius.exception.UnauthorizedActionException;
+import com.example.vinicius.repository.FollowRepository;
 import com.example.vinicius.repository.PostLikeRepository;
 import com.example.vinicius.repository.PostRepository;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,12 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final FollowRepository followRepository;
 
-    public PostService(PostRepository postRepository, PostLikeRepository postLikeRepository){
+    public PostService(PostRepository postRepository, PostLikeRepository postLikeRepository, FollowRepository followRepository) {
         this.postRepository = postRepository;
         this.postLikeRepository = postLikeRepository;
+        this.followRepository = followRepository;
     }
 
     public PostResponseDTO getPostById(Long id){
@@ -66,8 +70,21 @@ public class PostService {
         );
     }
 
-    public List<PostResponseDTO>getFeed(){
-        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
+    public List<PostResponseDTO>getFeed(User loggedUser){
+
+        List<Follow> follows = followRepository.findByFollower(loggedUser);
+        List<User> authors= new ArrayList<>();
+
+        for(Follow follow : follows){
+            authors.add(follow.getFollowing());
+        }
+        authors.add(loggedUser);
+
+        List<Post> posts = postRepository.findByUserInOrderByCreatedAtDesc(authors);
+        if(posts.isEmpty()){
+            posts = postRepository.findTrendingPosts();
+        }
+
         List<PostResponseDTO> dtos = new ArrayList<>();
 
         for (Post post: posts){

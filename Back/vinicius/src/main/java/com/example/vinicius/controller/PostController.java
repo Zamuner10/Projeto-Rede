@@ -28,8 +28,8 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostResponseDTO>> getFeed(){
-        List<PostResponseDTO> feed = postService.getFeed();
+    public ResponseEntity<List<PostResponseDTO>> getFeed(@AuthenticationPrincipal User loggerUser){
+        List<PostResponseDTO> feed = postService.getFeed(loggerUser);
         return ResponseEntity.ok(feed);
     }
 

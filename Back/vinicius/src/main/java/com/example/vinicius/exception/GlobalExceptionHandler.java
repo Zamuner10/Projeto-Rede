@@ -12,7 +12,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler extends RuntimeException {
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalArgumentException(IllegalArgumentException ex){
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handlePostNotFound(PostNotFoundException ex){
@@ -40,7 +51,7 @@ public class GlobalExceptionHandler extends RuntimeException {
     public ResponseEntity<ErrorResponseDTO> handleCommentNotFoundException(CommentNotFoundException ex){
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
+                HttpStatus.NOT_FOUND.value(),
                 "Not Found",
                 ex.getMessage()
         );
