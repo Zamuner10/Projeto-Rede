@@ -3,6 +3,7 @@ package com.example.vinicius.service;
 import com.example.vinicius.dto.UserSummaryDTO;
 import com.example.vinicius.entity.Follow;
 import com.example.vinicius.entity.User;
+import com.example.vinicius.enums.FollowStatus;
 import com.example.vinicius.exception.AlreadyFollowingException;
 import com.example.vinicius.exception.NotFollowingException;
 import com.example.vinicius.exception.UserNotFoundException;
@@ -39,6 +40,14 @@ public class FollowService {
         }
 
         Follow follow = new Follow(follower, targetUser);
+
+        boolean isPrivate = targetUser.getProfile() != null && targetUser.getProfile().isPrivate();
+
+        if(isPrivate){
+            follow.setStatus(FollowStatus.PENDING);
+        }else{
+            follow.setStatus(FollowStatus.ACCEPTED);
+        }
         followRepository.save(follow);
     }
 
@@ -58,7 +67,7 @@ public class FollowService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + userId));
         // Para saber os SEGUIDORES do usuário, contamos onde ele é o SEGUIDO (following)
-        return followRepository.countByFollowing(user);
+        return followRepository.countByFollowerAndStatus(user, FollowStatus.ACCEPTED);
     }
 
     @Transactional(readOnly = true)
@@ -66,14 +75,14 @@ public class FollowService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + userId));
         // Para saber quem o usuário SEGUE, contamos onde ele é o SEGUIDOR (follower)
-        return followRepository.countByFollower(user);
+        return followRepository.countByFollowingAndStatus(user, FollowStatus.ACCEPTED);
     }
 
     @Transactional(readOnly = true)
     public List<UserSummaryDTO> getFollowers(Long userId){
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + userId));
-        return followRepository.findByFollowing(user).stream()
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id:" + userId));
+        return followRepository.findByFollowerAndStatus(user, FollowStatus.ACCEPTED).stream()
                 .map(follow -> {
                     User f = follow.getFollower();
 
@@ -88,12 +97,46 @@ public class FollowService {
     public List<UserSummaryDTO> getFollowing(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o id: " + userId));
-        return followRepository.findByFollower(user).stream()
+        return followRepository.findByFollowingAndStatus(user,  FollowStatus.ACCEPTED).stream()
                 .map(follow -> {
                     User f = follow.getFollowing();
 
                     String nickname = f.getProfile() != null ? f.getProfile().getNickname() : f.getName();
                     String photo = f.getProfile() != null ? f.getProfile().getPhotoUrl() : null;
+                    return new UserSummaryDTO(f.getId(), nickname, photo);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void acceptFollowRequest(User targetUser, Long requesterId) {
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + requesterId));
+        Follow follow = followRepository.findByFollowerAndFollowing(requester, targetUser)
+                .orElseThrow(() -> new NotFollowingException("Solicitação de follow não encotrada."));
+
+        follow.setStatus(FollowStatus.ACCEPTED);
+        followRepository.save(follow);
+    }
+
+    @Transactional
+    public void rejectFollowRequest(User targetUser, Long requesterId) {
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + requesterId));
+        Follow follow = followRepository.findByFollowerAndFollowing(requester, targetUser)
+                .orElseThrow(() -> new NotFollowingException("Solicitação de follow não econtrada."));
+
+        followRepository.delete(follow);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserSummaryDTO> getPendingRequests(User targertUser){
+        return followRepository.findByFollowingAndStatus(targertUser, FollowStatus.PENDING).stream()
+                .map(follow ->{
+                    User f = follow.getFollower();
+                    String nickname = f.getProfile() != null ? f.getProfile().getNickname() : f.getName();
+                    String photo = f.getProfile() != null ? f.getProfile().getPhotoUrl() : null;
+
                     return new UserSummaryDTO(f.getId(), nickname, photo);
                 })
                 .collect(Collectors.toList());

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/users")
 public class FollowController {
@@ -52,4 +53,22 @@ public class FollowController {
     public ResponseEntity<List<UserSummaryDTO>> getFollowing(@PathVariable Long id){
         return ResponseEntity.ok(followService.getFollowing(id));
     }
+
+    @GetMapping("/requests")
+    public ResponseEntity<List<UserSummaryDTO>> getPendingRequests(@AuthenticationPrincipal User loggedUser) {
+        return ResponseEntity.ok(followService.getPendingRequests(loggedUser));
+    }
+
+    @PutMapping("/requests/{requestsId}/accept")
+    public ResponseEntity<Void> acceptFollowRequest(@PathVariable Long requestsId, @AuthenticationPrincipal User loggedUser) {
+        followService.acceptFollowRequest(loggedUser, requestsId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/requests/{requestsId}/reject")
+    public ResponseEntity<Void> rejectFollowRequest(@PathVariable Long requestsId, @AuthenticationPrincipal User loggedUser) {
+        followService.rejectFollowRequest(loggedUser, requestsId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

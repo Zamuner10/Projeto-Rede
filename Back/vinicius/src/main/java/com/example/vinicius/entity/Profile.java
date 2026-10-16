@@ -25,12 +25,15 @@ public class Profile {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Profile(Long id, String nickname, String photoUrl, String bio, User user) {
+    @Column(nullable = false)
+    private boolean isPrivate = false;
+    public Profile(Long id, String nickname, String photoUrl, String bio, User user, boolean isPrivate) {
         this.id = id;
         this.nickname = nickname;
         this.bio = bio;
         this.photoUrl = photoUrl;
         this.user = user;
+        this.isPrivate = isPrivate;
     }
 
     public Profile() {}
@@ -49,4 +52,7 @@ public class Profile {
 
     public void setUser(User user) {this.user = user;}
     public User getUser(){return user;}
+
+    public void setPrivate(boolean isPrivate){this.isPrivate = isPrivate;}
+    public boolean isPrivate(){return isPrivate;}
 }

@@ -6,6 +6,7 @@ import com.example.vinicius.entity.Follow;
 import com.example.vinicius.entity.Post;
 import com.example.vinicius.entity.PostLike;
 import com.example.vinicius.entity.User;
+import com.example.vinicius.enums.FollowStatus;
 import com.example.vinicius.exception.AlreadyLikeException;
 import com.example.vinicius.exception.PostNotFoundException;
 import com.example.vinicius.exception.UnauthorizedActionException;
@@ -72,7 +73,7 @@ public class PostService {
 
     public List<PostResponseDTO>getFeed(User loggedUser){
 
-        List<Follow> follows = followRepository.findByFollower(loggedUser);
+        List<Follow> follows = followRepository.findByFollowerAndStatus(loggedUser, FollowStatus.ACCEPTED);
         List<User> authors= new ArrayList<>();
 
         for(Follow follow : follows){

@@ -1,8 +1,8 @@
 package com.example.vinicius.entity;
 
+import com.example.vinicius.enums.FollowStatus;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,17 +23,21 @@ public class Follow {
 
     private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
+    private FollowStatus status;
+
     public Follow() {}
 
     public Follow (User follower, User following) {
         this.follower = follower;
         this.following = following;
     }
-    public Follow(Long id, User follower, User following,  LocalDateTime createdAt) {
+    public Follow(Long id, User follower, User following,  LocalDateTime createdAt, FollowStatus status) {
         this.id = id;
         this.follower = follower;
         this.following = following;
         this.createdAt = createdAt;
+        this.status = status;
     }
 
     @PrePersist
@@ -50,4 +54,6 @@ public class Follow {
     public void setFollowing(User following){this.following = following;}
     public User getFollowing() {return following;}
 
+    public void setStatus(FollowStatus status){this.status = status;}
+    public FollowStatus getStatus(){return status;}
 }
