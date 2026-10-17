@@ -44,7 +44,7 @@ public class PostService {
         boolean isPrivate = author.getProfile() != null && author.getProfile().isPrivate();
 
         if (isPrivate && !isSelf) {
-            boolean isFollowing = followRepository.existByFollowerAndFollowingAndStatus(
+            boolean isFollowing = followRepository.existsByFollowerAndFollowingAndStatus(
                     loggedUser, author, FollowStatus.ACCEPTED
             );
             if (!isFollowing) {

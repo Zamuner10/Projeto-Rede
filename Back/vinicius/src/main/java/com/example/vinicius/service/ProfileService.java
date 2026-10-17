@@ -37,7 +37,7 @@ public class ProfileService {
         boolean isPrivate = targetUser.getProfile() != null && targetUser.getProfile().isPrivate();
 
         if (isPrivate && !isSelf) {
-            boolean isFollowing = followRepository.existByFollowerAndFollowingAndStatus(
+            boolean isFollowing = followRepository.existsByFollowerAndFollowingAndStatus(
                     loggedUser, targetUser, FollowStatus.ACCEPTED
             );
             if (!isFollowing) {
