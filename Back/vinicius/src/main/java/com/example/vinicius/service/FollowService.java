@@ -4,6 +4,7 @@ import com.example.vinicius.dto.UserSummaryDTO;
 import com.example.vinicius.entity.Follow;
 import com.example.vinicius.entity.User;
 import com.example.vinicius.enums.FollowStatus;
+import com.example.vinicius.enums.NotificationType;
 import com.example.vinicius.exception.AlreadyFollowingException;
 import com.example.vinicius.exception.NotFollowingException;
 import com.example.vinicius.exception.UserNotFoundException;
@@ -20,10 +21,12 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public FollowService(FollowRepository followRepository, UserRepository userRepository) {
+    public FollowService(FollowRepository followRepository, UserRepository userRepository, NotificationService notificationService) {
         this.followRepository = followRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -45,6 +48,7 @@ public class FollowService {
 
         if(isPrivate){
             follow.setStatus(FollowStatus.PENDING);
+            notificationService.createNotification(targetUser, follower, NotificationType.FOLLOW_REQUEST);
         }else{
             follow.setStatus(FollowStatus.ACCEPTED);
         }
@@ -117,6 +121,8 @@ public class FollowService {
 
         follow.setStatus(FollowStatus.ACCEPTED);
         followRepository.save(follow);
+
+        notificationService.createNotification(requester, targetUser, NotificationType.FOLLOW_ACCEPTED);
     }
 
     @Transactional

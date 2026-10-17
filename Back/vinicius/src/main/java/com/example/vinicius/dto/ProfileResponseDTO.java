@@ -6,7 +6,8 @@ public record ProfileResponseDTO (
         Long id,
         String nickname,
         String photoUrl,
-        String bio
+        String bio,
+        boolean isPrivate
 ){
 
     public ProfileResponseDTO(Profile profile){
@@ -14,6 +15,8 @@ public record ProfileResponseDTO (
                 profile.getId(),
                 profile.getNickname(),
                 profile.getPhotoUrl(),
-                profile.getBio());
+                profile.getBio(),
+                profile.isPrivate()
+        );
     }
 }

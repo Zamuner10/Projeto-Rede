@@ -58,6 +58,8 @@ public class UserService {
     return savedUser;
     }
 
+
+
     private void validateEmailAlreadyExist(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
