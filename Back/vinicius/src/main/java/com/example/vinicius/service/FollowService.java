@@ -46,11 +46,12 @@ public class FollowService {
 
         boolean isPrivate = targetUser.getProfile() != null && targetUser.getProfile().isPrivate();
 
-        if(isPrivate){
+        if (isPrivate) {
             follow.setStatus(FollowStatus.PENDING);
             notificationService.createNotification(targetUser, follower, NotificationType.FOLLOW_REQUEST);
-        }else{
+        } else {
             follow.setStatus(FollowStatus.ACCEPTED);
+            notificationService.createNotification(targetUser, follower, NotificationType.FOLLOW);
         }
         followRepository.save(follow);
     }
@@ -70,26 +71,23 @@ public class FollowService {
     public long getFollowersCount(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + userId));
-        // Para saber os SEGUIDORES do usuário, contamos onde ele é o SEGUIDO (following)
-        return followRepository.countByFollowerAndStatus(user, FollowStatus.ACCEPTED);
+        return followRepository.countByFollowingAndStatus(user, FollowStatus.ACCEPTED);
     }
 
     @Transactional(readOnly = true)
     public long getFollowingCount(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + userId));
-        // Para saber quem o usuário SEGUE, contamos onde ele é o SEGUIDOR (follower)
-        return followRepository.countByFollowingAndStatus(user, FollowStatus.ACCEPTED);
+        return followRepository.countByFollowerAndStatus(user, FollowStatus.ACCEPTED);
     }
 
     @Transactional(readOnly = true)
-    public List<UserSummaryDTO> getFollowers(Long userId){
+    public List<UserSummaryDTO> getFollowers(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id:" + userId));
-        return followRepository.findByFollowerAndStatus(user, FollowStatus.ACCEPTED).stream()
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + userId));
+        return followRepository.findByFollowingAndStatus(user, FollowStatus.ACCEPTED).stream()
                 .map(follow -> {
                     User f = follow.getFollower();
-
                     String nickname = f.getProfile() != null ? f.getProfile().getNickname() : f.getName();
                     String photo = f.getProfile() != null ? f.getProfile().getPhotoUrl() : null;
                     return new UserSummaryDTO(f.getId(), nickname, photo);
@@ -98,13 +96,12 @@ public class FollowService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserSummaryDTO> getFollowing(Long userId){
+    public List<UserSummaryDTO> getFollowing(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o id: " + userId));
-        return followRepository.findByFollowingAndStatus(user,  FollowStatus.ACCEPTED).stream()
+        return followRepository.findByFollowerAndStatus(user, FollowStatus.ACCEPTED).stream()
                 .map(follow -> {
                     User f = follow.getFollowing();
-
                     String nickname = f.getProfile() != null ? f.getProfile().getNickname() : f.getName();
                     String photo = f.getProfile() != null ? f.getProfile().getPhotoUrl() : null;
                     return new UserSummaryDTO(f.getId(), nickname, photo);
@@ -117,7 +114,7 @@ public class FollowService {
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + requesterId));
         Follow follow = followRepository.findByFollowerAndFollowing(requester, targetUser)
-                .orElseThrow(() -> new NotFollowingException("Solicitação de follow não encotrada."));
+                .orElseThrow(() -> new NotFollowingException("Solicitação de follow não encontrada."));
 
         follow.setStatus(FollowStatus.ACCEPTED);
         followRepository.save(follow);
@@ -130,19 +127,18 @@ public class FollowService {
         User requester = userRepository.findById(requesterId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " + requesterId));
         Follow follow = followRepository.findByFollowerAndFollowing(requester, targetUser)
-                .orElseThrow(() -> new NotFollowingException("Solicitação de follow não econtrada."));
+                .orElseThrow(() -> new NotFollowingException("Solicitação de follow não encontrada."));
 
         followRepository.delete(follow);
     }
 
     @Transactional(readOnly = true)
-    public List<UserSummaryDTO> getPendingRequests(User targertUser){
-        return followRepository.findByFollowingAndStatus(targertUser, FollowStatus.PENDING).stream()
-                .map(follow ->{
+    public List<UserSummaryDTO> getPendingRequests(User targetUser) {
+        return followRepository.findByFollowingAndStatus(targetUser, FollowStatus.PENDING).stream()
+                .map(follow -> {
                     User f = follow.getFollower();
                     String nickname = f.getProfile() != null ? f.getProfile().getNickname() : f.getName();
                     String photo = f.getProfile() != null ? f.getProfile().getPhotoUrl() : null;
-
                     return new UserSummaryDTO(f.getId(), nickname, photo);
                 })
                 .collect(Collectors.toList());

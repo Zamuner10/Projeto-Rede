@@ -9,11 +9,13 @@ import com.example.vinicius.entity.User;
 import com.example.vinicius.enums.FollowStatus;
 import com.example.vinicius.exception.AlreadyLikeException;
 import com.example.vinicius.exception.PostNotFoundException;
+import com.example.vinicius.exception.PrivateProfileAccessException;
 import com.example.vinicius.exception.UnauthorizedActionException;
 import com.example.vinicius.repository.FollowRepository;
 import com.example.vinicius.repository.PostLikeRepository;
 import com.example.vinicius.repository.PostRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -32,17 +34,31 @@ public class PostService {
         this.followRepository = followRepository;
     }
 
-    public PostResponseDTO getPostById(Long id){
+    @Transactional(readOnly = true)
+    public PostResponseDTO getPostById(User loggedUser, Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new PostNotFoundException("Post não encontrado com o ID: "+ id));
+                .orElseThrow(() -> new PostNotFoundException("Post não encontrado com o ID: " + id));
+
+        User author = post.getUser();
+        boolean isSelf = author.getId().equals(loggedUser.getId());
+        boolean isPrivate = author.getProfile() != null && author.getProfile().isPrivate();
+
+        if (isPrivate && !isSelf) {
+            boolean isFollowing = followRepository.existByFollowerAndFollowingAndStatus(
+                    loggedUser, author, FollowStatus.ACCEPTED
+            );
+            if (!isFollowing) {
+                throw new PrivateProfileAccessException("Este post pertence a um perfil privado.");
+            }
+        }
         return new PostResponseDTO(
                 post.getId(),
                 post.getCaption(),
                 post.getMediaUrl(),
                 post.getMediaType(),
                 post.getCreatedAt(),
-                post.getUser().getProfile() != null ? post.getUser().getProfile().getNickname() : post.getUser().getName(),
-                post.getUser().getProfile() != null ? post.getUser().getProfile().getPhotoUrl() : null
+                author.getProfile() != null ? author.getProfile().getNickname() : author.getName(),
+                author.getProfile() != null ? author.getProfile().getPhotoUrl() : null
         );
     }
 

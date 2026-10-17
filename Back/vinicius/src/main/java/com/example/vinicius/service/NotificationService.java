@@ -29,7 +29,6 @@ public class NotificationService {
         }
         Notification notification = new Notification(recipient, sender, type);
         notificationRepository.save(notification);
-        notificationRepository.save(notification);
     }
 
     @Transactional(readOnly = true)

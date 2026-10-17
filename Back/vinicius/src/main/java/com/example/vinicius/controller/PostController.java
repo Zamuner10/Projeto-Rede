@@ -34,9 +34,8 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Long id){
-        PostResponseDTO post = postService.getPostById(id);
-        return ResponseEntity.ok(post);
+    public ResponseEntity<PostResponseDTO> getPostById(@AuthenticationPrincipal User loogerUser, @PathVariable Long id){
+        return ResponseEntity.ok(postService.getPostById(loogerUser, id));
     }
 
     @DeleteMapping("/{id}")

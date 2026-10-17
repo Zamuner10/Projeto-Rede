@@ -73,6 +73,6 @@ public class ProfileService {
         boolean isPrivate = profile != null && profile.isPrivate();
 
         return new ProfileResponseDTO(user.getId(), nickname, photoUrl, bio, isPrivate);
-    
+
     }
 }
