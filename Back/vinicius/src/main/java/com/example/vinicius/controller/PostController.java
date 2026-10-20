@@ -28,14 +28,14 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostResponseDTO>> getFeed(@AuthenticationPrincipal User loggerUser){
-        List<PostResponseDTO> feed = postService.getFeed(loggerUser);
+    public ResponseEntity<List<PostResponseDTO>> getFeed(@AuthenticationPrincipal User loggedUser){
+        List<PostResponseDTO> feed = postService.getFeed(loggedUser);
         return ResponseEntity.ok(feed);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDTO> getPostById(@AuthenticationPrincipal User loogerUser, @PathVariable Long id){
-        return ResponseEntity.ok(postService.getPostById(loogerUser, id));
+    public ResponseEntity<PostResponseDTO> getPostById(@AuthenticationPrincipal User loggedUser, @PathVariable Long id){
+        return ResponseEntity.ok(postService.getPostById(loggedUser, id));
     }
 
     @DeleteMapping("/{id}")

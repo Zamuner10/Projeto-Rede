@@ -95,7 +95,7 @@ public class FollowServiceTest {
     }
 
     @Test
-    @DisplayName("Deve criar solicitação com status PEDDING ao seguir perfil privado")
+    @DisplayName("Deve criar solicitação com status PENDING ao seguir perfil privado")
     public void shouldCreatePendingFollowingTargetIsPrivate(){
         User follower = new User();
         follower.setId(1L);

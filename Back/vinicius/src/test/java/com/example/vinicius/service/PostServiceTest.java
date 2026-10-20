@@ -75,14 +75,14 @@ public class PostServiceTest {
         post.setId(10L);
         post.setUser(author);
 
-        User loggerUser = new User();
-        loggerUser.setId(2L);
+        User loggedUser = new User();
+        loggedUser.setId(2L);
 
         when(postRepository.findById(10L)).thenReturn(Optional.of(post));
-        when(followRepository.existsByFollowerAndFollowingAndStatus(loggerUser, author, FollowStatus.ACCEPTED)).thenReturn(false);
+        when(followRepository.existsByFollowerAndFollowingAndStatus(loggedUser, author, FollowStatus.ACCEPTED)).thenReturn(false);
         PrivateProfileAccessException exception = assertThrows(
                 PrivateProfileAccessException.class,
-                () -> postService.getPostById(loggerUser, 10L)
+                () -> postService.getPostById(loggedUser, 10L)
         );
 
         assertNotNull(exception);
@@ -102,12 +102,12 @@ public class PostServiceTest {
         post.setId(10L);
         post.setUser(author);
 
-        User loggerUser = new User();
-        loggerUser.setId(2L);
+        User loggedUser = new User();
+        loggedUser.setId(2L);
 
         when(postRepository.findById(10L)).thenReturn(Optional.of(post));
 
-        PostResponseDTO result = postService.getPostById(loggerUser, 10L);
+        PostResponseDTO result = postService.getPostById(loggedUser, 10L);
 
         assertNotNull(result);
         assertEquals(10L, result.id());
@@ -128,13 +128,13 @@ public class PostServiceTest {
         post.setId(10L);
         post.setUser(author);
 
-        User loggerUser = new User();
-        loggerUser.setId(2L);
+        User loggedUser = new User();
+        loggedUser.setId(2L);
 
         when(postRepository.findById(10L)).thenReturn(Optional.of(post));
-        when(followRepository.existsByFollowerAndFollowingAndStatus(loggerUser, author, FollowStatus.ACCEPTED)).thenReturn(true);
+        when(followRepository.existsByFollowerAndFollowingAndStatus(loggedUser, author, FollowStatus.ACCEPTED)).thenReturn(true);
 
-        PostResponseDTO result = postService.getPostById(loggerUser, 10L);
+        PostResponseDTO result = postService.getPostById(loggedUser, 10L);
 
         assertNotNull(result);
         assertEquals(10L, result.id());
