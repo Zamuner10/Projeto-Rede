@@ -64,6 +64,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                                .requestMatchers("/ws/**").permitAll()
 //                        .requestMatchers(HttpMethod.POST, "/follow").permitAll()
 //                        .requestMatchers(HttpMethod.POST, "/following").permitAll()
                         .requestMatchers(

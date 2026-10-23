@@ -2,6 +2,7 @@ package com.example.vinicius.service;
 
 import com.example.vinicius.dto.UserRequestDTO;
 import com.example.vinicius.entity.Profile;
+import com.example.vinicius.exception.UserNotFoundException;
 import com.example.vinicius.repository.ProfileRepository;
 import com.example.vinicius.repository.UserRepository;
 import com.example.vinicius.entity.User;
@@ -133,6 +134,11 @@ public class UserService {
         if (!hasSpecialChar) {
             throw new IllegalArgumentException("Senha deve conter pelo menos um caractere especial");
         }
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByEmailOrNickname(username)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com o e-mail ou nickname: " + username));
     }
 }
 
