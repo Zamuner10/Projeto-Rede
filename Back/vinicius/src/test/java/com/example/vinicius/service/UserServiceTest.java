@@ -4,6 +4,7 @@ package com.example.vinicius.service;
 import com.example.vinicius.dto.UserRequestDTO;
 
 import com.example.vinicius.entity.Profile;
+import com.example.vinicius.entity.User;
 import com.example.vinicius.repository.ProfileRepository;
 import com.example.vinicius.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -125,5 +126,45 @@ public class UserServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.registerUser(dto));
         assertEquals("As senhas não coincidem", exception.getMessage());
         verify(userRepository,never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando existir email já cadastrado")
+    void registerUser_shouldThrowException_whenEmailAlreadyExist(){
+        UserRequestDTO dto = new UserRequestDTO ("Luan", "luGarga", "luanGargalo@email.com", "Senha123*", "Senha123*", 20);
+        when(userRepository.findByEmail("luanGargalo@email.com")).thenReturn(Optional.of(new User()));
+
+        IllegalArgumentException exception  = assertThrows(
+                IllegalArgumentException.class, () -> userService.registerUser(dto)
+        );
+
+        assertEquals("Endereço de e-mail já cadastrado!", exception.getMessage());
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve cadastrar usuário e perfil com sucesso quando os dados forem válidos")
+    void registerUser_shouldCreateUserAndProfile_whenDataIsValid(){
+        UserRequestDTO dto = new UserRequestDTO("Luan", "luGarga", "luanGargalo@email.com", "Senha123*", "Senha123*", 20);
+        when(userRepository.findByEmail("luanGargalo@email.com")).thenReturn(Optional.empty());
+        when(profileRepository.findByNickname("luGarga")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("Senha123*")).thenReturn("encoded_password_123");
+
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setName("Luan");
+        savedUser.setEmail("luanGargalo@emai.com");
+        savedUser.setPassword("encoded_passowrd_123");
+
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
+        User result = userService.registerUser(dto);
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("Luan", result.getName());
+        assertEquals("luanGargalo@emai.com", result.getEmail());
+
+        verify(userRepository, times(1)).save(any(User.class));
+        verify(profileRepository, times(1)).save(any(Profile.class));
     }
 }
