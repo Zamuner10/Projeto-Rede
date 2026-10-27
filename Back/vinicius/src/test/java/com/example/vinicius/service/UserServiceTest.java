@@ -45,7 +45,7 @@ public class UserServiceTest {
 
     @Test
     void registerUser_shouldThrowException_whenNameIsEmpty(){
-        UserRequestDTO dto = new UserRequestDTO(" ", "luanGargalo@email.com", "luGarga", "Senha123*", "Senha123*", 20);
+        UserRequestDTO dto = new UserRequestDTO(" ", "luGarga", "luanGargalo@email.com", "Senha123*", "Senha123*", 20);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.registerUser(dto));
         assertEquals("Nome não pode ficar vazio.", exception.getMessage());
         verify(userRepository, never()).save(any());
@@ -53,7 +53,7 @@ public class UserServiceTest {
 
     @Test
     void registerUser_shouldThrowException_whenNameIsInvalid(){
-        UserRequestDTO dto = new UserRequestDTO("luan", "luanGargalo@email.com", "luGarga", "Senha123*", "Senha123*", 20);
+        UserRequestDTO dto = new UserRequestDTO("luan", "luGarga", "luanGargalo@email.com",  "Senha123*", "Senha123*", 20);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.registerUser(dto));
         assertEquals("A primeira letra deve ser Maiúscula", exception.getMessage());
         verify(userRepository, never()).save(any());
@@ -61,7 +61,7 @@ public class UserServiceTest {
 
     @Test
     void registerUser_shouldThrowException_whenNameContainsSpecialCharacters(){
-        UserRequestDTO dto = new UserRequestDTO("Lu@n", "luanGargalo@email.com", "luGarga", "Senha123*", "Senha123*", 20);
+        UserRequestDTO dto = new UserRequestDTO("Lu@n", "luGarga", "luanGargalo@email.com",  "Senha123*", "Senha123*", 20);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.registerUser(dto));
         assertEquals("Não pode conter caracteres especiais.", exception.getMessage());
         verify(userRepository, never()).save(any());
@@ -69,7 +69,7 @@ public class UserServiceTest {
 
     @Test
     void registerUser_shouldThrowException_whenNameContainsNumber(){
-        UserRequestDTO dto = new UserRequestDTO("Luan10", "luanGargalo@email.com", "luGarga", "Senha123*", "Senha123*", 20);
+        UserRequestDTO dto = new UserRequestDTO("Luan10", "luGarga", "luanGargalo@email.com",  "Senha123*", "Senha123*", 20);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.registerUser(dto));
         assertEquals("Não pode conter números no nome.", exception.getMessage());
         verify(userRepository, never()).save(any());
