@@ -27,9 +27,6 @@ public class ChatServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private MessageResponseDTO messageResponseDTO;
-
-    @Mock
     private MessageRepository messageRepository;
 
     @Mock
@@ -55,7 +52,7 @@ public class ChatServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar execeção se não existir uma conversa de usuário")
+    @DisplayName("Deve criar uma nova conversa e salvar a mensagem quando a conversa não existir")
     void sendMessage_shouldCreateNewConversationAndSaveMessage_whenConversationDoesNotExist(){
 
         User user = new User();
@@ -83,7 +80,7 @@ public class ChatServiceTest {
 
     @Test
     @DisplayName("Deve reutilizar conversa existente ao enviar mensagem")
-    void sendMessage_shoulReuseConversationAndSaveMessage_whenConversationExists(){
+    void sendMessage_shouldReuseConversationAndSaveMessage_whenConversationExists(){
         User user = new User();
         user.setId(1L);
 
