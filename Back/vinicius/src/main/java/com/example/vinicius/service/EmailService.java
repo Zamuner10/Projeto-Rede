@@ -7,7 +7,12 @@ import org.springframework.web.client.RestTemplate;
 public class EmailService {
     private final RestTemplate restTemplate;
 
-    public EmailService(){
-        this.restTemplate = new RestTemplate();
+    public EmailService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    public void sendEmail(String to, String subject, String body){
+        String url = "https://api.email-provider.com/send";
+        restTemplate.postForEntity(url, body, String.class);
     }
 }
